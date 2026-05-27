@@ -12,16 +12,27 @@ type Schema = v.InferOutput<typeof schema>;
 const state = reactive({ email: "", password: "" });
 const toast = useToast();
 const router = useRouter();
+const { fetch: fetchSession } = useUserSession();
+const debugResponse = ref<unknown>(null);
+const debugError = ref<string | null>(null);
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  debugResponse.value = null;
+  debugError.value = null;
   try {
-    await $fetch("/auth/login", {
+    const res = await $fetch("/auth/login", {
       method: "POST",
       body: event.data,
     });
+    // console.log("[login] server response:", res);
+    debugResponse.value = res;
+    await fetchSession();
     router.push("/");
-  } catch {
-    toast.add({ title: "Error", description: "Invalid email or password.", color: "error" });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    // console.error("[login] error:", e);
+    debugError.value = msg;
+    toast.add({ title: "Login fehlgeschlagen", description: msg, color: "error" });
   }
 }
 </script>
@@ -48,6 +59,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           <NuxtLink to="/auth/register" class="underline">Register</NuxtLink>
         </div>
       </UForm>
+
+      <div v-if="debugError" class="mt-4 p-2 rounded bg-red-100 text-red-800 text-xs font-mono break-all">
+        Error: {{ debugError }}
+      </div>
+      <div v-if="debugResponse" class="mt-4 p-2 rounded bg-green-100 text-green-800 text-xs font-mono">
+        Response: {{ JSON.stringify(debugResponse) }}
+      </div>
     </UCard>
   </div>
 </template>

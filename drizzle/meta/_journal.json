@@ -8,6 +8,13 @@
       "when": 1779740725713,
       "tag": "0000_ordinary_bushwacker",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779901555280,
+      "tag": "0001_empty_agent_zero",
+      "breakpoints": true
     }
   ]
 }

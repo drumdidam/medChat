@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
+const { loggedIn, clear, user } = useUserSession();
+const router = useRouter();
+
+async function logout() {
+  await clear();
+  router.push("/auth/login");
+}
+
 const items = [
   {
     label: "Home",
@@ -31,5 +39,12 @@ const items = [
 </script>
 
 <template>
-  <UNavigationMenu :items="items" />
+  <div class="grid grid-cols-3 items-center px-6 py-2">
+    <div class="text-lg font-bold">medChat</div>
+    <UNavigationMenu :items="items" class="justify-self-center" />
+    <div class="flex justify-end items-center gap-3">
+      <UButton v-if="loggedIn" variant="ghost" @click="logout">Logout</UButton>
+      <UAvatar color="primary" :alt="user?.email" />
+    </div>
+  </div>
 </template>

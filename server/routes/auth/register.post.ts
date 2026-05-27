@@ -3,13 +3,13 @@ import { users } from "../../db/schema";
 import bcrypt from "bcrypt";
 
 export default defineEventHandler(async (event) => {
-  const { email, password } = await readBody(event);
+  const { username, email, password, specialty, verificationDocument } = await readBody(event);
 
   const hashed = await bcrypt.hash(password, 12);
 
   const [user] = await db
     .insert(users)
-    .values({ email, password: hashed })
+    .values({ username, email, password: hashed, specialty, verificationDocument })
     .returning({ id: users.id, email: users.email });
 
   await setUserSession(event, {
