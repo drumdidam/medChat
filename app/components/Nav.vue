@@ -21,11 +21,6 @@ const items = [
     to: "/forum",
   },
   {
-    label: "Search",
-    icon: "i-heroicons-magnifying-glass",
-    to: "/search",
-  },
-  {
     label: "Sign In",
     icon: "i-heroicons-arrow-right-end-on-rectangle",
     to: "/auth/login",
