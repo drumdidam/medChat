@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { categories, topics, posts } from "./schema";
+import { roles, categories, topics, posts } from "./schema";
 import { eq } from "drizzle-orm";
 
 const client = postgres(process.env.DATABASE_URL!);
@@ -148,7 +148,56 @@ const dummyTopics: {
   },
 ];
 
+const seedRoles = [
+  {
+    name: "user",
+    permissions: {
+      viewContent: true,
+      createTopic: true,
+      editOwnContent: true,
+      deleteOwnContent: true,
+      banUsers: false,
+      markResolved: false,
+      assignRoles: false,
+      systemConfig: false,
+    },
+  },
+  {
+    name: "moderator",
+    permissions: {
+      viewContent: true,
+      createTopic: true,
+      editOwnContent: true,
+      deleteOwnContent: true,
+      deleteAnyContent: true,
+      banUsers: true,
+      markResolved: true,
+      assignRoles: false,
+      systemConfig: false,
+    },
+  },
+  {
+    name: "admin",
+    permissions: {
+      viewContent: true,
+      createTopic: true,
+      editOwnContent: true,
+      deleteOwnContent: true,
+      deleteAnyContent: true,
+      banUsers: true,
+      markResolved: true,
+      assignRoles: true,
+      systemConfig: true,
+    },
+  },
+];
+
 async function seed() {
+  console.log("Seeding roles...");
+  for (const role of seedRoles) {
+    await db.insert(roles).values(role).onConflictDoNothing();
+  }
+
   console.log("Seeding categories...");
   for (const category of medicalCategories) {
     await db.insert(categories).values(category).onConflictDoNothing();

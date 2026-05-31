@@ -23,7 +23,7 @@ async function createCategory() {
     <NuxtLink
       v-for="category in categories"
       :key="category.id"
-      :to="`/Threads?categoryId=${category.id}`"
+      :to="`/forum/threads?categoryId=${category.id}`"
       class="block"
     >
       <UCard class="hover:bg-gray-50 transition cursor-pointer">

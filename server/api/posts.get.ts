@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { posts, users } from "../db/schema";
+import { posts, users, topics } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
@@ -11,10 +11,14 @@ export default defineEventHandler(async (event) => {
 			id: posts.id,
 			content: posts.content,
 			createdAt: posts.createdAt,
+			userId: posts.userId,
 			username: users.username,
+			TopicTitle: topics.title,
+			isResolved: topics.isResolved,
 		})
 		.from(posts)
 		.leftJoin(users, eq(posts.userId, users.id))
+		.leftJoin(topics, eq(posts.topicId, topics.id))
 		.where(eq(posts.topicId, topicId as string));
 
 	return allPosts;

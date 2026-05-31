@@ -5,7 +5,14 @@ const categoryId = route.query.categoryId as string;
 const isOpen = ref(false);
 const state = reactive({ title: "", description: "" });
 
-const { data: topics, refresh } = await useFetch(`/api/topics?categoryId=${categoryId}`);
+const STATUS_LABELS = {
+  true: "Resolved",
+  false: "Open",
+};
+
+const { data: topics, refresh } = await useFetch(
+  categoryId ? `/api/topics?categoryId=${categoryId}` : "/api/topics",
+);
 
 async function createTopic() {
   await $fetch("/api/topics", {
@@ -29,19 +36,22 @@ async function createTopic() {
     <NuxtLink
       v-for="topic in topics"
       :key="topic.id"
-      :to="`/topic/${topic.id}`"
+      :to="`/forum/${topic.id}`"
       class="block"
     >
       <UCard class="hover:bg-gray-50 transition cursor-pointer">
         <div class="flex justify-between items-start">
           <div>
+            <UBadge :color="topic.isResolved ? 'error' : 'success'">
+              {{ STATUS_LABELS[topic.isResolved] }}
+            </UBadge>
             <p class="font-semibold">{{ topic.title }}</p>
             <p class="text-sm text-gray-500">{{ topic.description }}</p>
           </div>
           <div class="text-sm text-gray-400 text-right shrink-0 ml-4">
+            <UAvatar />
             <p>{{ topic.username }}</p>
             <p>{{ new Date(topic.createdAt).toLocaleDateString() }}</p>
-            <UBadge v-if="topic.isResolved" color="success" variant="soft">Resolved</UBadge>
           </div>
         </div>
       </UCard>

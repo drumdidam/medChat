@@ -2,6 +2,7 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 
 const { loggedIn, clear, user } = useUserSession();
+console.log(user);
 const router = useRouter();
 
 async function logout() {
@@ -9,7 +10,7 @@ async function logout() {
   router.push("/auth/login");
 }
 
-const items = [
+const items = computed(() => [
   {
     label: "Home",
     icon: "i-heroicons-home",
@@ -20,17 +21,21 @@ const items = [
     icon: "i-heroicons-chat-bubble-left-right",
     to: "/forum",
   },
-  {
-    label: "Sign In",
-    icon: "i-heroicons-arrow-right-end-on-rectangle",
-    to: "/auth/login",
-  },
-  {
-    label: "Sign Up",
-    icon: "i-heroicons-user-plus",
-    to: "/auth/register",
-  },
-];
+  ...(!loggedIn.value
+    ? [
+        {
+          label: "Sign In",
+          icon: "i-heroicons-arrow-right-end-on-rectangle",
+          to: "/auth/login",
+        },
+        {
+          label: "Sign Up",
+          icon: "i-heroicons-user-plus",
+          to: "/auth/register",
+        },
+      ]
+    : []),
+]);
 </script>
 
 <template>
@@ -39,7 +44,9 @@ const items = [
     <UNavigationMenu :items="items" class="justify-self-center" />
     <div class="flex justify-end items-center gap-3">
       <UButton v-if="loggedIn" variant="ghost" @click="logout">Logout</UButton>
-      <UAvatar color="primary" :alt="user?.email" />
+      <NuxtLink :to="`/user/${user?.id}`">
+        <UAvatar color="primary" :alt="user?.email" />
+      </NuxtLink>
     </div>
   </div>
 </template>

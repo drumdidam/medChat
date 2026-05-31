@@ -15,6 +15,11 @@ export const users = pgTable("users", {
   isVerified: boolean("is_verified").notNull().default(false),
   verificationDocument: text("verification_document"),
   specialty: text("specialty"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  dateOfBirth: timestamp("date_of_birth"),
+  homeCountry: text("home_country"),
+  institution: text("institution"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

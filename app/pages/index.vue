@@ -19,7 +19,7 @@ const groups = computed(() => {
         label: t.title,
         suffix: t.categoryName ?? undefined,
         icon: "i-heroicons-chat-bubble-left-right",
-        to: `/topic/${t.id}`,
+        to: `/forum/${t.id}`,
       })),
     },
   ];

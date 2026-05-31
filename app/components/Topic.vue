@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <div>
-    <NuxtLink :to="`/topic/${id}`">
+    <NuxtLink :to="`/forum/${id}`">
       <UCard color:secondary>
         <div class="flex h-20">
           <div class="flex flex-col w-1/4 h-full">

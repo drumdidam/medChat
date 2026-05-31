@@ -1,15 +1,24 @@
 import { db } from "../db";
 import { topics } from "../db/schema";
+import { hasPermission } from "#shared/utils/permissions";
 
 export default defineEventHandler(async (event) => {
-	const { title, description, categoryId } = await readBody(event);
-	const session = await getUserSession(event);
-	const userId = session.user.id;
+  const session = await getUserSession(event);
 
-	const [topic] = await db
-		.insert(topics)
-		.values({ title, description, userId, categoryId: categoryId ?? null })
-		.returning();
+  if (!session.user) {
+    throw createError({ statusCode: 401, message: "Not authenticated" });
+  }
 
-	return topic;
+  if (!hasPermission(session.user.permissions, "createTopic")) {
+    throw createError({ statusCode: 403, message: "Forbidden" });
+  }
+
+  const { title, description, categoryId } = await readBody(event);
+
+  const [topic] = await db
+    .insert(topics)
+    .values({ title, description, userId: session.user.id, categoryId: categoryId ?? null })
+    .returning();
+
+  return topic;
 });

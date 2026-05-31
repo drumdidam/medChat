@@ -1,32 +1,44 @@
 import { db } from "../../db";
-import { users } from "../../db/schema";
+import { users, roles } from "../../db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import type { Permissions } from "#shared/utils/permissions";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { email, password } = body;
 
-  // console.log("[login] attempt for:", email);
-
-  const [user] = await db.select().from(users).where(eq(users.email, email));
+  const [user] = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      password: users.password,
+      roleName: roles.name,
+      permissions: roles.permissions,
+    })
+    .from(users)
+    .leftJoin(roles, eq(users.roleId, roles.id))
+    .where(eq(users.email, email));
 
   if (!user) {
-    // console.log("[login] user not found:", email);
     throw createError({ statusCode: 401, message: "Invalid credentials" });
   }
 
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
-    // console.log("[login] wrong password for:", email);
     throw createError({ statusCode: 401, message: "Invalid credentials" });
   }
 
-  // console.log("[login] setting session for user id:", user.id);
   await setUserSession(event, {
-    user: { id: user.id, email: user.email },
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.roleName ?? "guest",
+      permissions: (user.permissions ?? {}) as Permissions,
+    },
   });
-  // console.log("[login] session set successfully");
 
   return { success: true };
 });
