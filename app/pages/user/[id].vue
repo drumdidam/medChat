@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const route = useRoute();
-const { data: profile } = await useFetch(`/api/user/${route.params.id}`);
+const { data: profile, refresh } = await useFetch(
+  `/api/user/${route.params.id}`,
+);
 
 console.log(profile);
 
@@ -16,6 +18,14 @@ const state = reactive({
   verificationDocument: profile.value?.verificationDocument ?? "",
   role: profile.value?.roleName ?? "",
 });
+
+async function updateProfile() {
+  await $fetch(`/api/user/${route.params.id}`, {
+    method: "PATCH",
+    body: state,
+  });
+  await refresh();
+}
 </script>
 
 <template>
@@ -56,7 +66,7 @@ const state = reactive({
           <UInput v-model="state.verificationDocument" class="w-full" />
         </UFormField>
         <div class="flex justify-end">
-          <UButton type="submit">Save</UButton>
+          <UButton @click="updateProfile" type="submit">Save</UButton>
         </div>
       </div>
     </UForm>

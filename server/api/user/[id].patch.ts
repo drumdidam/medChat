@@ -1,33 +1,21 @@
 import { db } from "../../db";
-import { users, roles } from "../../db/schema";
+import { users } from "../../db/schema";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcrypt";
-import type { Permissions } from "#shared/utils/permissions";
 
 export default defineEventHandler(async (event) => {
-	const { username, email, password, specialty, verificationDocument, institution, dateOfBirth, homeCountry, firstName, lastName, role } = await readBody(event);
+	const session = await getUserSession(event);
 
-	const [userRole] = await db.select().from(roles).where(eq(roles.name, "user"));
-	if (!userRole) {
-		throw createError({ statusCode: 500, message: "Roles not seeded. Run npm run db:seed first." });
+	if (!session.user) {
+		throw createError({ statusCode: 401, message: "Not authenticated" });
 	}
 
-	const hashed = await bcrypt.hash(password, 12);
+	const userId = session.user.id;
+	const { username, email, specialty, verificationDocument, institution, dateOfBirth, homeCountry, firstName, lastName } = await readBody(event);
 
-	const [user] = await db
-		.insert(users)
-		.values({ username, email, password: hashed, specialty, verificationDocument, roleId: userRole.id })
-		.returning({ id: users.id, email: users.email, username: users.username });
-
-	await setUserSession(event, {
-		user: {
-			id: user.id,
-			email: user.email,
-			username: user.username,
-			role: userRole.name,
-			permissions: userRole.permissions as Permissions,
-		},
-	});
-
-	return { success: true };
+	await db.update(users).set({
+		username, email, specialty, verificationDocument, institution,
+		dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+		homeCountry, firstName, lastName,
+		updatedAt: new Date(),
+	}).where(eq(users.id, userId));
 });
