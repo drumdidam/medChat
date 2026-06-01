@@ -13,6 +13,7 @@ const STATUS_LABELS = {
 
 const isCreateOpen = ref(false);
 const isDeleteOpen = ref(false);
+const isResolveOpen = ref(false);
 const isEditOpen = ref(false);
 const postToDelete = ref<string | null>(null);
 const postContentToEdit = ref<string | null>(null);
@@ -21,8 +22,12 @@ const state = reactive({ content: "" });
 
 const { data: posts, refresh } = await useFetch(`/api/posts?topicId=${id}`);
 
-const label = posts.value?.[0]?.TopicTitle;
-const isResolved = posts.value?.[0]?.isResolved;
+const label = computed(() => posts.value?.[0]?.TopicTitle);
+const isResolved = computed(() => posts.value?.[0]?.isResolved);
+const resolvedModalTitle = computed(
+  () =>
+    `Do you want to ${STATUS_LABELS[String(isResolved.value)].toLowerCase()} the topic?`,
+);
 
 function canDelete(postUserId: string): boolean {
   if (!user.value) return false;
@@ -46,6 +51,18 @@ function canEdit(postUserId: string): boolean {
 function openDelete(postId: string) {
   postToDelete.value = postId;
   isDeleteOpen.value = true;
+}
+
+//console.log(topicId);
+
+function openResolve() {
+  isResolveOpen.value = true;
+}
+
+async function resolveTopic() {
+  await $fetch(`/api/topics/${id}`, { method: "PATCH" });
+  isResolveOpen.value = false;
+  refresh();
 }
 
 function openEdit(postId: string, content: string) {
@@ -92,9 +109,17 @@ async function deletePost() {
 <template>
   <div class="p-6 space-y-4">
     <div class="flex justify-between items-center">
-      <UBadge :color="isResolved ? 'error' : 'success'">{{
-        STATUS_LABELS[isResolved]
-      }}</UBadge>
+      <div>
+        <UBadge :color="isResolved ? 'error' : 'success'">{{
+          STATUS_LABELS[isResolved]
+        }}</UBadge>
+        <UButton
+          @click="openResolve"
+          :color="isResolved ? 'success' : 'error'"
+          >{{ isResolved ? "Open topic" : "Close topic" }}</UButton
+        >
+      </div>
+
       <h1 class="text-2xl font-bold">{{ label }}</h1>
       <div class="flex justify-between items-center gap-2">
         <UButton @click="isCreateOpen = true">Reply</UButton>
@@ -165,6 +190,18 @@ async function deletePost() {
           <div class="flex justify-end">
             <UButton @click="editPost">Save</UButton>
             <UButton @click="isEditOpen = false" color="error">Discard</UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
+    <UModal v-model:open="isResolveOpen" :title="resolvedModalTitle">
+      <template #body>
+        <div class="space-y-4">
+          <div class="flex justify-end">
+            <UButton @click="resolveTopic">Yes</UButton>
+            <UButton @click="isResolveOpen = false" color="error"
+              >Discard</UButton
+            >
           </div>
         </div>
       </template>

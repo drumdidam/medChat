@@ -1,5 +1,5 @@
-import { db } from "../db";
-import { topics } from "../db/schema";
+import { db } from "../../db";
+import { topics } from "../../db/schema";
 import { hasPermission } from "#shared/utils/permissions";
 
 export default defineEventHandler(async (event) => {
