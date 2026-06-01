@@ -4,8 +4,6 @@ const { data: profile, refresh } = await useFetch(
   `/api/user/${route.params.id}`,
 );
 
-console.log(profile);
-
 const state = reactive({
   email: profile.value?.email ?? "",
   username: profile.value?.username ?? "",
@@ -19,7 +17,25 @@ const state = reactive({
   role: profile.value?.roleName ?? "",
 });
 
+const avatarFile = ref<File | null>(null);
+const avatarPreview = ref<string | null>(profile.value?.avatarUrl ?? null);
+
+function onAvatarChange(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  avatarFile.value = file;
+  avatarPreview.value = URL.createObjectURL(file);
+}
+
+async function uploadAvatar() {
+  if (!avatarFile.value) return;
+  const formData = new FormData();
+  formData.append("avatar", avatarFile.value);
+  await $fetch("/api/user/avatar", { method: "POST", body: formData });
+}
+
 async function updateProfile() {
+  await uploadAvatar();
   await $fetch(`/api/user/${route.params.id}`, {
     method: "PATCH",
     body: state,
@@ -31,6 +47,21 @@ async function updateProfile() {
 <template>
   <div class="p-6 max-w-xl space-y-4">
     <h1 class="text-2xl font-bold">Profile</h1>
+
+    <div class="flex items-center gap-4">
+      <UAvatar :src="avatarPreview ?? undefined" size="xl" />
+      <label class="cursor-pointer">
+        <UButton as="span">Change Photo</UButton>
+        <!-- Das input ist versteckt, der Button triggert es -->
+        <input
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="onAvatarChange"
+        />
+      </label>
+    </div>
+
     <UForm :state="state">
       <div class="space-y-4">
         <UFormField label="Email" name="email">

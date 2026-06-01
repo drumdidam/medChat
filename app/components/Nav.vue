@@ -2,8 +2,12 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 
 const { loggedIn, clear, user } = useUserSession();
-console.log(user);
 const router = useRouter();
+
+const { data: profile } = await useFetch(
+  () => `/api/user/${user.value?.id}`,
+  { watch: [user], immediate: loggedIn.value },
+);
 
 async function logout() {
   await clear();
@@ -44,8 +48,8 @@ const items = computed(() => [
     <UNavigationMenu :items="items" class="justify-self-center" />
     <div class="flex justify-end items-center gap-3">
       <UButton v-if="loggedIn" variant="ghost" @click="logout">Logout</UButton>
-      <NuxtLink :to="`/user/${user?.id}`">
-        <UAvatar color="primary" :alt="user?.email" />
+      <NuxtLink v-if="loggedIn" :to="`/user/${user?.id}`">
+        <UAvatar :src="profile?.avatarUrl ?? undefined" :alt="user?.email" />
       </NuxtLink>
     </div>
   </div>

@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
 			createdAt: posts.createdAt,
 			userId: posts.userId,
 			username: users.username,
+			avatarUrl: users.avatarUrl,
 			TopicTitle: topics.title,
 			isResolved: topics.isResolved,
 		})

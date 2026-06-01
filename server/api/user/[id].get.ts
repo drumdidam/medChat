@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
 			institution: users.institution,
 			specialty: users.specialty,
 			verificationDocument: users.verificationDocument,
+			avatarUrl: users.avatarUrl,
 			roleName: roles.name,
 		})
 		.from(users)

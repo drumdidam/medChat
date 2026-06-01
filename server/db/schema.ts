@@ -20,6 +20,7 @@ export const users = pgTable("users", {
   dateOfBirth: timestamp("date_of_birth"),
   homeCountry: text("home_country"),
   institution: text("institution"),
+  avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
