@@ -130,11 +130,13 @@ async function deletePost() {
       <UCard v-for="post in posts" :key="post.id">
         <div class="flex gap-4">
           <div class="w-32 shrink-0">
-            <UAvatar :src="post.avatarUrl ?? undefined" />
-            <p class="text-sm font-medium mt-1">{{ post.username }}</p>
-            <p class="text-xs text-gray-400">
-              {{ new Date(post.createdAt).toLocaleString() }}
-            </p>
+            <NuxtLink :to="`/user/${post?.userId}`">
+              <UAvatar :src="post.avatarUrl ?? undefined" />
+              <p class="text-sm font-medium mt-1">{{ post.username }}</p>
+              <p class="text-xs text-gray-400">
+                {{ new Date(post.createdAt).toLocaleString() }}
+              </p>
+            </NuxtLink>
           </div>
           <div class="flex-1">
             <p>{{ post.content }}</p>

@@ -4,6 +4,8 @@ const { data: profile, refresh } = await useFetch(
   `/api/user/${route.params.id}`,
 );
 
+const { user } = useUserSession();
+
 const state = reactive({
   email: profile.value?.email ?? "",
   username: profile.value?.username ?? "",
@@ -19,6 +21,8 @@ const state = reactive({
 
 const avatarFile = ref<File | null>(null);
 const avatarPreview = ref<string | null>(profile.value?.avatarUrl ?? null);
+
+const isOwnProfile = computed(() => user.value?.id === profile.value?.id);
 
 function onAvatarChange(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -51,8 +55,7 @@ async function updateProfile() {
     <div class="flex items-center gap-4">
       <UAvatar :src="avatarPreview ?? undefined" size="xl" />
       <label class="cursor-pointer">
-        <UButton as="span">Change Photo</UButton>
-        <!-- Das input ist versteckt, der Button triggert es -->
+        <UButton v-if="isOwnProfile" as="span">Change Photo</UButton>
         <input
           type="file"
           accept="image/*"
@@ -65,39 +68,82 @@ async function updateProfile() {
     <UForm :state="state">
       <div class="space-y-4">
         <UFormField label="Email" name="email">
-          <UInput v-model="state.email" class="w-full" />
+          <UInput
+            v-model="state.email"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <UFormField label="Username" name="username">
-          <UInput v-model="state.username" class="w-full" />
+          <UInput
+            v-model="state.username"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <div class="flex gap-4">
           <UFormField label="First Name" name="firstName" class="flex-1">
-            <UInput v-model="state.firstName" class="w-full" />
+            <UInput
+              v-model="state.firstName"
+              class="w-full"
+              :disabled="!isOwnProfile"
+            />
           </UFormField>
           <UFormField label="Last Name" name="lastName" class="flex-1">
-            <UInput v-model="state.lastName" class="w-full" />
+            <UInput
+              v-model="state.lastName"
+              class="w-full"
+              :disabled="!isOwnProfile"
+            />
           </UFormField>
         </div>
-        <UFormField label="Date of Birth" name="dateOfBirth">
-          <UInput v-model="state.dateOfBirth" type="date" class="w-full" />
+        <UFormField
+          label="Date of Birth"
+          name="dateOfBirth"
+          :disabled="!isOwnProfile"
+        >
+          <UInput
+            v-model="state.dateOfBirth"
+            type="date"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <UFormField label="Home Country" name="homeCountry">
-          <UInput v-model="state.homeCountry" class="w-full" />
+          <UInput
+            v-model="state.homeCountry"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <UFormField label="Institution" name="institution">
-          <UInput v-model="state.institution" class="w-full" />
+          <UInput
+            v-model="state.institution"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <UFormField label="Specialty" name="specialty">
-          <UInput v-model="state.specialty" class="w-full" />
+          <UInput
+            v-model="state.specialty"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <UFormField label="Role" name="role">
           <UInput v-model="state.role" class="w-full" disabled />
         </UFormField>
         <UFormField label="Verification Document" name="verificationDocument">
-          <UInput v-model="state.verificationDocument" class="w-full" />
+          <UInput
+            v-model="state.verificationDocument"
+            class="w-full"
+            :disabled="!isOwnProfile"
+          />
         </UFormField>
         <div class="flex justify-end">
-          <UButton @click="updateProfile" type="submit">Save</UButton>
+          <UButton v-if="isOwnProfile" @click="updateProfile" type="submit"
+            >Save</UButton
+          >
         </div>
       </div>
     </UForm>
