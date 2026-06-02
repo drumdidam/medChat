@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
 			avatarUrl: users.avatarUrl,
 			TopicTitle: topics.title,
 			isResolved: topics.isResolved,
+			attachments: posts.attachments,
 		})
 		.from(posts)
 		.leftJoin(users, eq(posts.userId, users.id))

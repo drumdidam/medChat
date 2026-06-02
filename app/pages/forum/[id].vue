@@ -6,6 +6,8 @@ const { loggedIn, clear, user } = useUserSession();
 const route = useRoute();
 const id = route.params.id as string;
 
+const selectedFiles = ref<File[]>([]);
+
 const STATUS_LABELS = {
   true: "Resolved",
   false: "Open",
@@ -16,7 +18,7 @@ const isDeleteOpen = ref(false);
 const isResolveOpen = ref(false);
 const isEditOpen = ref(false);
 const postToDelete = ref<string | null>(null);
-const postContentToEdit = ref<string | null>(null);
+const postContentToEdit = ref<string | undefined>(undefined);
 const postToEdit = ref<string | null>(null);
 const state = reactive({ content: "" });
 
@@ -72,11 +74,16 @@ function openEdit(postId: string, content: string) {
 }
 
 async function createPost() {
-  await $fetch("/api/posts", {
-    method: "POST",
-    body: { content: state.content, topicId: id },
-  });
+  const formData = new FormData();
+  formData.append("content", state.content);
+  formData.append("topicId", id);
+  for (const file of selectedFiles.value) {
+    formData.append("files", file);
+  }
+
+  await $fetch("/api/posts", { method: "POST", body: formData });
   state.content = "";
+  selectedFiles.value = [];
   isCreateOpen.value = false;
   refresh();
 }
@@ -140,6 +147,11 @@ async function deletePost() {
           </div>
           <div class="flex-1">
             <p>{{ post.content }}</p>
+            <div v-if="post.attachments?.length">
+              <a v-for="url in post.attachments" :href="url" target="blank">
+                {{ url.split("/").pop() }}
+              </a>
+            </div>
           </div>
           <UButton
             v-if="canEdit(post.userId)"
@@ -177,6 +189,16 @@ async function deletePost() {
           <UFormField label="Your reply" name="content">
             <UTextarea v-model="state.content" class="w-full" :rows="4" />
           </UFormField>
+          <input
+            type="file"
+            multiple
+            @change="
+              (e) =>
+                (selectedFiles = Array.from(
+                  (e.target as HTMLInputElement).files ?? [],
+                ))
+            "
+          />
           <div class="flex justify-end">
             <UButton @click="createPost">Post</UButton>
           </div>

@@ -22,6 +22,13 @@
       "when": 1780257106005,
       "tag": "0002_careless_ikaris",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780432982099,
+      "tag": "0003_living_siren",
+      "breakpoints": true
     }
   ]
 }

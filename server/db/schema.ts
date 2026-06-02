@@ -47,6 +47,7 @@ export const posts = pgTable("posts", {
   content: text("content").notNull(),
   userId: uuid("user_id").notNull().references(() => users.id),
   topicId: uuid("topic_id").notNull().references(() => topics.id),
+  attachments: text("attachments").array().default([]).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
