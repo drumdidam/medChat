@@ -21,6 +21,8 @@ export const users = pgTable("users", {
   homeCountry: text("home_country"),
   institution: text("institution"),
   avatarUrl: text("avatar_url"),
+  verifyToken: text("verify_token"),
+  verifyTokenExpiry: timestamp("verify_token_expiry"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

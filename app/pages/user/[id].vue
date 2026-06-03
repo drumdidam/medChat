@@ -4,7 +4,7 @@ const { data: profile, refresh } = await useFetch(
   `/api/user/${route.params.id}`,
 );
 
-const { user } = useUserSession();
+const { user, loggedIn } = useUserSession();
 
 const state = reactive({
   email: profile.value?.email ?? "",
@@ -19,10 +19,15 @@ const state = reactive({
   role: profile.value?.roleName ?? "",
 });
 
+// const isOwnProfile = false;
+
 const avatarFile = ref<File | null>(null);
 const avatarPreview = ref<string | null>(profile.value?.avatarUrl ?? null);
 
-const isOwnProfile = computed(() => user.value?.id === profile.value?.id);
+const isOwnProfile = computed(() => {
+  if (!loggedIn.value) return false;
+  return user.value?.id === profile.value?.id;
+});
 
 function onAvatarChange(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];

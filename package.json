@@ -15,11 +15,12 @@
   },
   "dependencies": {
     "@nuxt/ui": "^4.8.0",
-"bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.4.6",
     "nuxt-auth-utils": "^0.5.29",
     "postgres": "^3.4.9",
+    "resend": "^6.12.4",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "valibot": "^1.4.1",
