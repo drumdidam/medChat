@@ -2,6 +2,8 @@
 import * as v from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui";
 
+const router = useRouter();
+
 const schema = v.pipe(
   v.object({
     username: v.pipe(
@@ -14,13 +16,24 @@ const schema = v.pipe(
       v.minLength(8, "Must be at least 8 characters"),
     ),
     passwordRepeat: v.string(),
+    privacyCheck: v.boolean(),
     //specialty: v.optional(v.string()),
     //verificationDocument: v.optional(v.string()),
   }),
 
   v.forward(
-    v.check((data) => data.password === data.passwordRepeat, "Passwords do not match"),
-    ["passwordRepeat"]
+    v.check(
+      (data) => data.password === data.passwordRepeat,
+      "Passwords do not match",
+    ),
+    ["passwordRepeat"],
+  ),
+  v.forward(
+    v.check(
+      (data) => data.privacyCheck === true,
+      "Please accept our privacy policy",
+    ),
+    ["privacyCheck"],
   ),
 );
 
@@ -31,11 +44,11 @@ const state = reactive({
   email: "",
   password: "",
   passwordRepeat: "",
+  privacyCheck: false,
   //specialty: "",
   //verificationDocument: "",
 });
 const toast = useToast();
-const router = useRouter();
 const { fetch: fetchSession, user } = useUserSession();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -87,6 +100,15 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             type="password"
             class="w-full"
           />
+        </UFormField>
+        <UFormField name="privacyCheck" required>
+          <UCheckbox v-model="state.privacyCheck"></UCheckbox>
+          <p>
+            I accept our
+            <a class="underline" href="/PrivacyPolicy" target="blank"
+              >privacy policy
+            </a>
+          </p>
         </UFormField>
         <!-- <UFormField label="Specialty" name="specialty" class="w-full"> -->
         <!--   <UInput v-model="state.specialty" class="w-full" placeholder="e.g. Cardiology" /> -->
