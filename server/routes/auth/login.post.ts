@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
       email: users.email,
       username: users.username,
       password: users.password,
+      isVerified: users.isVerified,
       roleName: roles.name,
       permissions: roles.permissions,
     })
@@ -37,6 +38,7 @@ export default defineEventHandler(async (event) => {
       username: user.username,
       role: user.roleName ?? "guest",
       permissions: (user.permissions ?? {}) as Permissions,
+      isVerified: user.isVerified ?? false,
     },
   });
 

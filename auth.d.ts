@@ -7,6 +7,7 @@ declare module "#auth-utils" {
     username: string;
     role: string;
     permissions: Permissions;
+    isVerified: boolean;
   }
 }
 

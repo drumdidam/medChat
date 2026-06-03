@@ -8,6 +8,9 @@ export default defineEventHandler(async (event) => {
 	if (!session.user) {
 		throw createError({ statusCode: 401, message: "Not authenticated" });
 	}
+	if (!session.user.isVerified) {
+		throw createError({ statusCode: 403, message: "Email not verified" });
+	}
 	const userId = session.user.id;
 
 	const form = await readFormData(event);

@@ -14,6 +14,10 @@ const { data: topics, refresh } = await useFetch(
   categoryId ? `/api/topics?categoryId=${categoryId}` : "/api/topics",
 );
 
+console.log(topics);
+
+//const { data: posts, refresh } = await useFetch(`/api/posts?topicId=${id}`);
+
 async function createTopic() {
   await $fetch("/api/topics", {
     method: "POST",
@@ -49,7 +53,7 @@ async function createTopic() {
             <p class="text-sm text-gray-500">{{ topic.description }}</p>
           </div>
           <div class="text-sm text-gray-400 text-right shrink-0 ml-4">
-            <UAvatar />
+            <UAvatar :src="topic.avatarUrl" />
             <p>{{ topic.username }}</p>
             <p>{{ new Date(topic.createdAt).toLocaleDateString() }}</p>
           </div>

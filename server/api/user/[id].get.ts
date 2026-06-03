@@ -24,6 +24,7 @@ export default defineEventHandler(async (event) => {
 			verificationDocument: users.verificationDocument,
 			avatarUrl: users.avatarUrl,
 			roleName: roles.name,
+			isVerified: users.isVerified,
 		})
 		.from(users)
 		.leftJoin(roles, eq(users.roleId, roles.id))

@@ -3,6 +3,9 @@ import { hasPermission } from "#shared/utils/permissions";
 
 const { loggedIn, clear, user } = useUserSession();
 
+//console.log(user.value.isVerified);
+console.log(user.value);
+
 const route = useRoute();
 const id = route.params.id as string;
 
@@ -42,13 +45,25 @@ function canDelete(postUserId: string): boolean {
 
 function canEdit(postUserId: string): boolean {
   if (!user.value) return false;
-
   if (postUserId === user.value.id) {
     return hasPermission(user.value.permissions, "editOwnContent");
   }
-
   return false;
 }
+
+const canPost = computed(
+  () => loggedIn.value && user.value?.isVerified === true,
+);
+
+const canClose = computed(() => {
+  if (!user.value) return false;
+
+  if (user.value.role === "admin" || user.value.role === "moderator") {
+    return true;
+  }
+
+  return false;
+});
 
 function openDelete(postId: string) {
   postToDelete.value = postId;
@@ -121,6 +136,7 @@ async function deletePost() {
           STATUS_LABELS[isResolved]
         }}</UBadge>
         <UButton
+          v-if="canClose"
           @click="openResolve"
           :color="isResolved ? 'success' : 'error'"
           >{{ isResolved ? "Open topic" : "Close topic" }}</UButton
@@ -129,7 +145,7 @@ async function deletePost() {
 
       <h1 class="text-2xl font-bold">{{ label }}</h1>
       <div class="flex justify-between items-center gap-2">
-        <UButton @click="isCreateOpen = true">Reply</UButton>
+        <UButton v-if="loggedIn" @click="isCreateOpen = true">Reply</UButton>
       </div>
     </div>
 
@@ -186,22 +202,27 @@ async function deletePost() {
     <UModal v-model:open="isCreateOpen" title="Reply">
       <template #body>
         <div class="space-y-4">
-          <UFormField label="Your reply" name="content">
-            <UTextarea v-model="state.content" class="w-full" :rows="4" />
-          </UFormField>
-          <input
-            type="file"
-            multiple
-            @change="
-              (e) =>
-                (selectedFiles = Array.from(
-                  (e.target as HTMLInputElement).files ?? [],
-                ))
-            "
-          />
-          <div class="flex justify-end">
-            <UButton @click="createPost">Post</UButton>
+          <div v-if="!canPost" class="text-sm text-yellow-500">
+            Your account is not verified yet. Please check your inbox.
           </div>
+          <template v-else>
+            <UFormField label="Your reply" name="content">
+              <UTextarea v-model="state.content" class="w-full" :rows="4" />
+            </UFormField>
+            <input
+              type="file"
+              multiple
+              @change="
+                (e) =>
+                  (selectedFiles = Array.from(
+                    (e.target as HTMLInputElement).files ?? [],
+                  ))
+              "
+            />
+            <div class="flex justify-end">
+              <UButton @click="createPost">Post</UButton>
+            </div>
+          </template>
         </div>
       </template>
     </UModal>

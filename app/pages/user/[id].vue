@@ -54,7 +54,8 @@ async function updateProfile() {
 </script>
 
 <template>
-  <div class="p-6 max-w-xl space-y-4">
+  <div class="flex justify-center p-6">
+  <div class="w-full max-w-xl space-y-4">
     <h1 class="text-2xl font-bold">Profile</h1>
 
     <div class="flex items-center gap-4">
@@ -152,5 +153,6 @@ async function updateProfile() {
         </div>
       </div>
     </UForm>
+  </div>
   </div>
 </template>

@@ -29,7 +29,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     await fetchSession();
     router.push("/");
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e);
+    const msg = (e as any)?.data?.message ?? (e instanceof Error ? e.message : String(e));
     // console.error("[login] error:", e);
     debugError.value = msg;
     toast.add({ title: "Login fehlgeschlagen", description: msg, color: "error" });

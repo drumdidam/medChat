@@ -4,10 +4,10 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 const { loggedIn, clear, user } = useUserSession();
 const router = useRouter();
 
-const { data: profile } = await useFetch(
-  () => `/api/user/${user.value?.id}`,
-  { watch: [user], immediate: loggedIn.value },
-);
+const { data: profile } = useFetch(() => `/api/user/${user.value?.id}`, {
+  watch: [user],
+  immediate: loggedIn.value,
+});
 
 async function logout() {
   await clear();
@@ -44,7 +44,9 @@ const items = computed(() => [
 
 <template>
   <div class="grid grid-cols-3 items-center px-6 py-2">
-    <div class="text-lg font-bold">medChat</div>
+    <NuxtLink to="/">
+      <div class="text-lg font-bold">medChat</div>
+    </NuxtLink>
     <UNavigationMenu :items="items" class="justify-self-center" />
     <div class="flex justify-end items-center gap-3">
       <UButton v-if="loggedIn" variant="ghost" @click="logout">Logout</UButton>

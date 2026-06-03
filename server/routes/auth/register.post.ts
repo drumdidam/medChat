@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
       username: user.username,
       role: userRole.name,
       permissions: userRole.permissions as Permissions,
+      isVerified: false,
     },
   });
 

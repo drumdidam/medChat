@@ -1,14 +1,19 @@
 <script setup lang="ts">
 const route = useRoute();
-const router = useRouter();
 
 const { data, error } = await useFetch("/api/auth/verify", {
   query: { token: route.query.token },
 });
 
+let timer: ReturnType<typeof setTimeout> | null = null;
+
 if (data.value) {
-  setTimeout(() => router.push("/login"), 3000);
+  timer = setTimeout(() => navigateTo("/auth/login"), 3000);
 }
+
+onBeforeUnmount(() => {
+  if (timer) clearTimeout(timer);
+});
 </script>
 
 <template>
