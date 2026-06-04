@@ -5,7 +5,7 @@ export async function sendVerificationMail(email: string, token: string) {
 
 	console.log(email);
 
-	const resend = new Resend('re_9Y3hijiS_DiaVVXoumxULy6ggVWZEf5Qv');
+	const resend = new Resend(process.env.RESEND_API_KEY);
 
 	const result = await resend.emails.send({
 		from: 'noreply@dev.sernaglia.at',
