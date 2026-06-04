@@ -54,7 +54,7 @@ async function createTopic() {
           </div>
           <div class="text-sm text-gray-400 text-right shrink-0 ml-4">
             <UAvatar :src="topic.avatarUrl" />
-            <p>{{ topic.username }}</p>
+            <p>{{ topic.userId ? topic.username : "deleted User" }}</p>
             <p>{{ new Date(topic.createdAt).toLocaleDateString() }}</p>
           </div>
         </div>

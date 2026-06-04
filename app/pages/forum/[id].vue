@@ -155,7 +155,9 @@ async function deletePost() {
           <div class="w-32 shrink-0">
             <NuxtLink :to="`/user/${post?.userId}`">
               <UAvatar :src="post.avatarUrl ?? undefined" />
-              <p class="text-sm font-medium mt-1">{{ post.username }}</p>
+              <p class="text-sm font-medium mt-1">
+                {{ post.userId ? post.username : "deleted User" }}
+              </p>
               <p class="text-xs text-gray-400">
                 {{ new Date(post.createdAt).toLocaleString() }}
               </p>

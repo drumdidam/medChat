@@ -36,6 +36,20 @@
       "when": 1780494658246,
       "tag": "0004_sparkling_prowler",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780600111642,
+      "tag": "0005_wealthy_vargas",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780600451962,
+      "tag": "0006_low_jigsaw",
+      "breakpoints": true
     }
   ]
 }
