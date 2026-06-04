@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const userId = session.user.id;
-	const { username, email, specialty, verificationDocument, institution, dateOfBirth, homeCountry, firstName, lastName } = await readBody(event);
+	const { username, email, specialty, institution, dateOfBirth, homeCountry, firstName, lastName } = await readBody(event);
 
 	await db.update(users).set({
-		username, email, specialty, verificationDocument, institution,
+		username, email, specialty, institution,
 		dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
 		homeCountry, firstName, lastName,
 		updatedAt: new Date(),

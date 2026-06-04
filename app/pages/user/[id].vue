@@ -16,21 +16,22 @@ const state = reactive({
   homeCountry: profile.value?.homeCountry ?? "",
   institution: profile.value?.institution ?? "",
   specialty: profile.value?.specialty ?? "",
-  verificationDocument: profile.value?.verificationDocument ?? "",
   role: profile.value?.roleName ?? "",
 });
 
 // const isOwnProfile = false;
 
 const avatarFile = ref<File | null>(null);
+const documentFile = ref<File | null>(null);
 const avatarPreview = ref<string | null>(profile.value?.avatarUrl ?? null);
+const documentName = ref<string | null>(null);
+const deletePassword = ref("");
+const isDeleteOpen = ref(false);
 
 const isOwnProfile = computed(() => {
   if (!loggedIn.value) return false;
   return user.value?.id === profile.value?.id;
 });
-
-const isDeleteOpen = ref(false);
 
 function onAvatarChange(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -39,7 +40,12 @@ function onAvatarChange(event: Event) {
   avatarPreview.value = URL.createObjectURL(file);
 }
 
-const deletePassword = ref("");
+function onDocumentChange(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  documentFile.value = file;
+  documentName.value = file.name;
+}
 
 async function uploadAvatar() {
   if (!avatarFile.value) return;
@@ -48,8 +54,16 @@ async function uploadAvatar() {
   await $fetch("/api/user/avatar", { method: "POST", body: formData });
 }
 
+async function uploadDocument() {
+  if (!documentFile.value) return;
+  const formData = new FormData();
+  formData.append("document", documentFile.value);
+  await $fetch("/api/user/document", { method: "POST", body: formData });
+}
+
 async function updateProfile() {
   await uploadAvatar();
+  await uploadDocument();
   await $fetch(`/api/user/${route.params.id}`, {
     method: "PATCH",
     body: state,
@@ -161,11 +175,27 @@ async function deleteUser() {
             label="Verification Document"
             name="verificationDocument"
           >
-            <UInput
-              v-model="state.verificationDocument"
-              class="w-full"
-              :disabled="!isOwnProfile"
-            />
+            <label class="cursor-pointer">
+              <UButton as="span">{{
+                documentName ??
+                (profile?.verificationDocument
+                  ? "Replace Document"
+                  : "Upload Document")
+              }}</UButton>
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                class="hidden"
+                @change="onDocumentChange"
+              />
+            </label>
+            <UButton
+              v-if="profile?.verificationDocument"
+              to="/api/user/document"
+              target="_blank"
+              as="a"
+              >View Document</UButton
+            >
           </UFormField>
           <div class="grid grid-cols-2">
             <div class="flex justify-center items-center">
