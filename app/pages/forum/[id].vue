@@ -131,7 +131,7 @@ async function deletePost() {
 <template>
   <div class="p-6 space-y-4">
     <div class="flex justify-between items-center">
-      <div>
+      <div class="flex items-center gap-2">
         <UBadge :color="isResolved ? 'error' : 'success'">{{
           STATUS_LABELS[isResolved]
         }}</UBadge>
@@ -139,6 +139,7 @@ async function deletePost() {
           v-if="canClose"
           @click="openResolve"
           :color="isResolved ? 'success' : 'error'"
+          size="sm"
           >{{ isResolved ? "Open topic" : "Close topic" }}</UButton
         >
       </div>
@@ -174,6 +175,8 @@ async function deletePost() {
           <UButton
             v-if="canEdit(post.userId)"
             @click="openEdit(post.id, post.content)"
+            size="sm"
+            class="w-15 justify-center"
             >Edit</UButton
           >
           <UButton
@@ -181,6 +184,7 @@ async function deletePost() {
             @click="openDelete(post.id)"
             color="error"
             size="sm"
+            class="w-15 justify-center"
             >Delete</UButton
           >
         </div>
