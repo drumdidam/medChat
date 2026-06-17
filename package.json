@@ -29,6 +29,8 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
-    "drizzle-kit": "^0.31.10"
+    "drizzle-dbml-generator": "^0.10.0",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.22.4"
   }
 }
