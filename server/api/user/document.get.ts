@@ -23,10 +23,7 @@ export default defineEventHandler(async (event) => {
   const filename = user.verificationDocument.split("/").pop()!;
   const filepath = join(process.cwd(), "private", "documents", filename);
 
-  const ext = filename.split(".").pop()?.toLowerCase();
-  const contentType = ext === "pdf" ? "application/pdf" : `image/${ext}`;
-
-  setHeader(event, "Content-Type", contentType);
+  setHeader(event, "Content-Type", contentTypeFor(filename));
   setHeader(event, "Content-Disposition", `inline; filename="${filename}"`);
 
   return sendStream(event, createReadStream(filepath));
