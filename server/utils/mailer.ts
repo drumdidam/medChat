@@ -1,7 +1,9 @@
 import { Resend } from 'resend';
 
 export async function sendVerificationMail(email: string, token: string) {
-	const url = `http://localhost:3000/auth/verify?token=${token}`
+
+	const config = useRuntimeConfig()
+	const url = `${config.public.siteUrl}/auth/verify?token=${token}`
 
 	console.log(email);
 
