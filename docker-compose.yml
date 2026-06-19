@@ -26,6 +26,7 @@ services:
       NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL}
     volumes:
       - documents_data:/app/private/documents 
+      - uploads_data:/app/public/uploads 
     depends_on:
       db:
         condition: service_healthy
@@ -33,3 +34,4 @@ services:
 volumes:
   postgres_data:
   documents_data:
+  uploads_data:
