@@ -1,11 +1,20 @@
 import { db } from "../../db";
 import { topics, users, categories } from "../../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
-  const { categoryId } = getQuery(event);
+  const query = getQuery(event);
+  const { categoryId } = query;
 
-  const base = db
+  const page = Math.max(1, Number(query.page) || 1);
+  const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
+  const offset = (page - 1) * limit;
+
+  const where = categoryId
+    ? eq(topics.categoryId, categoryId as string)
+    : undefined;
+
+  const items = await db
     .select({
       id: topics.id,
       title: topics.title,
@@ -20,11 +29,13 @@ export default defineEventHandler(async (event) => {
     })
     .from(topics)
     .leftJoin(users, eq(topics.userId, users.id))
-    .leftJoin(categories, eq(topics.categoryId, categories.id));
+    .leftJoin(categories, eq(topics.categoryId, categories.id))
+    .where(where)
+    .orderBy(desc(topics.createdAt))
+    .limit(limit)
+    .offset(offset);
 
-  if (categoryId) {
-    return base.where(eq(topics.categoryId, categoryId as string));
-  }
+  const total = await db.$count(topics, where);
 
-  return base;
+  return { items, total, page, limit };
 });

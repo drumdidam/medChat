@@ -10,13 +10,19 @@ const STATUS_LABELS = {
   false: "Open",
 };
 
-const { data: topics, refresh } = await useFetch(
-  categoryId ? `/api/topics?categoryId=${categoryId}` : "/api/topics",
-);
+const page = ref(1);
+const limit = 20;
 
-console.log(topics);
+const { data, refresh } = await useFetch("/api/topics", {
+  query: computed(() => ({
+    categoryId: categoryId || undefined,
+    page: page.value,
+    limit,
+  })),
+});
 
-//const { data: posts, refresh } = await useFetch(`/api/posts?topicId=${id}`);
+const topics = computed(() => data.value?.items ?? []);
+const total = computed(() => data.value?.total ?? 0);
 
 async function createTopic() {
   await $fetch("/api/topics", {
@@ -26,6 +32,7 @@ async function createTopic() {
   state.title = "";
   state.description = "";
   isOpen.value = false;
+  page.value = 1;
   refresh();
 }
 </script>
@@ -60,6 +67,18 @@ async function createTopic() {
         </div>
       </UCard>
     </NuxtLink>
+
+    <p v-if="topics.length === 0" class="text-sm text-gray-500">
+      No threads yet.
+    </p>
+
+    <div v-if="total > limit" class="flex justify-center pt-2">
+      <UPagination
+        v-model:page="page"
+        :total="total"
+        :items-per-page="limit"
+      />
+    </div>
 
     <UModal v-model:open="isOpen" title="New Thread">
       <template #body>
