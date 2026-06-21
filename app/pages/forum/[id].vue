@@ -29,10 +29,11 @@ const { data: posts, refresh } = await useFetch(`/api/posts?topicId=${id}`);
 
 const label = computed(() => posts.value?.[0]?.TopicTitle);
 const isResolved = computed(() => posts.value?.[0]?.isResolved);
-const resolvedModalTitle = computed(
-  () =>
-    `Do you want to ${STATUS_LABELS[String(isResolved.value)].toLowerCase()} the topic?`,
-);
+
+const resolvedModalTitle = computed(() => {
+  const label = STATUS_LABELS[String(isResolved.value)] ?? STATUS_LABELS.false;
+  return `Do you want to ${label.toLowerCase()} the topic?`;
+});
 
 function canDelete(postUserId: string): boolean {
   if (!user.value) return false;
@@ -133,7 +134,7 @@ async function deletePost() {
     <div class="flex justify-between items-center">
       <div class="flex items-center gap-2">
         <UBadge :color="isResolved ? 'error' : 'success'">{{
-          STATUS_LABELS[isResolved]
+          STATUS_LABELS[String(isResolved)] ?? STATUS_LABELS.false
         }}</UBadge>
         <UButton
           v-if="canClose"
