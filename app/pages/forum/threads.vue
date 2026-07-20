@@ -2,6 +2,8 @@
 const route = useRoute();
 const categoryId = route.query.categoryId as string;
 
+const { loggedIn, clear, user } = useUserSession();
+
 const isOpen = ref(false);
 const state = reactive({ title: "", description: "" });
 
@@ -73,11 +75,7 @@ async function createTopic() {
     </p>
 
     <div v-if="total > limit" class="flex justify-center pt-2">
-      <UPagination
-        v-model:page="page"
-        :total="total"
-        :items-per-page="limit"
-      />
+      <UPagination v-model:page="page" :total="total" :items-per-page="limit" />
     </div>
 
     <UModal v-model:open="isOpen" title="New Thread">

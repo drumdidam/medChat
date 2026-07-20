@@ -4,7 +4,7 @@ import { hasPermission } from "#shared/utils/permissions";
 const { loggedIn, clear, user } = useUserSession();
 
 //console.log(user.value.isVerified);
-console.log(user.value);
+//console.log(user.value);
 
 const route = useRoute();
 const id = route.params.id as string;

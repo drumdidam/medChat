@@ -2,6 +2,8 @@
 const isOpen = ref(false);
 const state = reactive({ name: "", description: "" });
 
+const { loggedIn, clear, user } = useUserSession();
+
 const { data: categories, refresh } = await useFetch("/api/categories");
 
 async function createCategory() {
@@ -17,7 +19,7 @@ async function createCategory() {
   <div class="p-6 space-y-4">
     <div class="flex justify-between items-center">
       <h1 class="text-2xl font-bold">Categories</h1>
-      <UButton @click="isOpen = true">New Category</UButton>
+      <UButton v-if="loggedIn" @click="isOpen = true">New Category</UButton>
     </div>
 
     <NuxtLink
